@@ -33,13 +33,11 @@ public final class Game extends Observable implements Serializable {
         Game game = Game.getInstance();
         game._observers = new ArrayList<>();
 
-        Console console = new Console(new Controller());
-        Thread consoleThread = new Thread(console);
-        consoleThread.start();
+        Controller controller = new Controller();
 
-        GUI gui = new GUI(new Controller());
-        Thread guiThread = new Thread(gui);
-        guiThread.start();
+        Console console = new Console(controller);
+
+        GUI gui = new GUI(controller);
 
         game._addObserver(console);
         game._addObserver(gui);
@@ -113,6 +111,7 @@ public final class Game extends Observable implements Serializable {
         Collections.shuffle(this.deck);
         this.setChanged();
         this.notifyObservers(CHOOSERULES);
+        System.out.println();
     }
 
     /**

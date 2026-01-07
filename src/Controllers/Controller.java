@@ -29,6 +29,7 @@ public class Controller {
      */
     public void newGame() {
         this.game.newGame();
+        System.out.println();
     }
 
     /**

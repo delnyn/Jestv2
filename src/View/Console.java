@@ -20,7 +20,7 @@ import java.util.*;
 import static Model.Suit.*;
 import static View.ViewRequest.*;
 
-public class  Console implements Observer, Runnable {
+public class  Console implements Observer {
     private Scanner scan;
     private Controller controller;
     private boolean saveable = false;
@@ -28,9 +28,6 @@ public class  Console implements Observer, Runnable {
     public Console (Controller controller) {
         this.controller = controller;
         this.scan = new Scanner(System.in);
-    }
-
-    public void run() {
     }
 
     private void say(String string) {
@@ -75,30 +72,32 @@ public class  Console implements Observer, Runnable {
 
     @Override
     public void update(Observable o, Object arg) {
-        if (arg instanceof List<?>) {
-            this.makeHand((Player) o, (List<Card>) arg);
-        } else {
-            switch (arg) {
-                case MENU -> this.menu();
-                case CHOOSERULES -> this.chooseRules();
-                case SHOWCARDORDER -> this.showCardOrder();
-                case CHOOSEEXTENSION -> this.chooseExtension();
-                case POPULATE -> this.populate();
-                case SHOWTROPHIES -> this.showTrophies();
-                case MAKEHAND -> this.say("[ " + ((Bot) o).getName() + " a fait son offre ]");
-                case PICKCARD -> {
-                    if (o instanceof Human) {
-                        this.pickCard((Human) o);
-                    } else {
-                        this.say("[ " + ((Bot) o).getName() + " a pris une carte ]");
-                        this.controller.takeCard((Bot) o, ((Bot) o).getStrategy().takeCard(Game.getInstance().getPickables((Bot) o)));
+        new Thread(() -> {
+            if (arg instanceof List<?>) {
+                this.makeHand((Player) o, (List<Card>) arg);
+            } else {
+                switch (arg) {
+                    case MENU -> this.menu();
+                    case CHOOSERULES -> this.chooseRules();
+                    case SHOWCARDORDER -> this.showCardOrder();
+                    case CHOOSEEXTENSION -> this.chooseExtension();
+                    case POPULATE -> this.populate();
+                    case SHOWTROPHIES -> this.showTrophies();
+                    case MAKEHAND -> this.say("[ " + ((Bot) o).getName() + " a fait son offre ]");
+                    case PICKCARD -> {
+                        if (o instanceof Human) {
+                            this.pickCard((Human) o);
+                        } else {
+                            this.say("[ " + ((Bot) o).getName() + " a pris une carte ]");
+                            this.controller.takeCard((Bot) o, ((Bot) o).getStrategy().takeCard(Game.getInstance().getPickables((Bot) o)));
+                        }
                     }
+                    case TROPHIESGIVEN -> this.trophiesGiven();
+                    case WINNER -> this.winner();
+                    default -> throw new RuntimeException("/!\\ ViewRequest de Game irrecevable : " + arg);
                 }
-                case TROPHIESGIVEN -> this.trophiesGiven();
-                case WINNER -> this.winner();
-                default -> throw new RuntimeException("/!\\ ViewRequest de Game irrecevable : " + arg);
             }
-        }
+        }).start();
     }
 
     private void menu() {
