@@ -41,7 +41,7 @@ public class  Console implements Observer {
         }
         System.out.print("> ");
         int answer = 0;
-        String quit = scan.nextLine();
+        String quit = (new Scanner(System.in)).nextLine();
         if (quit.equals("q")) {
             if (this.ask(Arrays.asList("Quitter la partie?", "Non", "Oui")) == 2) {
                 if (saveable) {
